@@ -30,6 +30,7 @@ services:
 
 - Images are tagged by the major PostgreSQL version supported: `12`, `13`, `14`, `15`, `16` or `18`.
 - Release tags (e.g. `v1.2.3`) also publish versioned tags to GHCR in the form `ghcr.io/<owner>/<repo>:v1.2.3-pg18`.
+- Replace `<owner>` and `<repo>` with your GitHub organization/user and repository name.
 - The `SCHEDULE` variable determines backup frequency. See go-cron schedules documentation [here](http://godoc.org/github.com/robfig/cron#hdr-Predefined_schedules). Omit to run the backup immediately and then exit.
 - If `PASSPHRASE` is provided, the backup will be encrypted using GPG.
 - Run `docker exec <container name> sh backup.sh` to trigger a backup ad-hoc.
