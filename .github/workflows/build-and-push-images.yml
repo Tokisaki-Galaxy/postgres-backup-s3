@@ -58,6 +58,7 @@ jobs:
           tags: ${{ steps.prep.outputs.tags }}
           build-args: |
             ALPINE_VERSION=${{ matrix.alpine }}
+            POSTGRES_MAJOR=${{ matrix.postgres }}
           platforms: |
             linux/amd64
             linux/arm64
