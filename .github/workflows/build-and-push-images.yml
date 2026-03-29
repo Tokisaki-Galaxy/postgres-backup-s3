@@ -35,7 +35,8 @@ jobs:
       - name: Prepare image tags
         id: prep
         run: |
-          image="ghcr.io/${GITHUB_REPOSITORY,,}"
+          repo_lc="$(echo "${GITHUB_REPOSITORY}" | tr '[:upper:]' '[:lower:]')"
+          image="ghcr.io/${repo_lc}"
           tags="${image}:${{ matrix.postgres }}"
           if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
             tags="${tags},${image}:${GITHUB_REF_NAME}-pg${{ matrix.postgres }}"

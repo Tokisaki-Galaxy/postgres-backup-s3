@@ -12,7 +12,7 @@ services:
       POSTGRES_PASSWORD: password
 
   backup:
-    image: ghcr.io/tokisaki-galaxy/postgres-backup-s3:18
+    image: ghcr.io/<owner>/postgres-backup-s3:18
     environment:
       SCHEDULE: '@weekly'     # optional
       BACKUP_KEEP_DAYS: 7     # optional
