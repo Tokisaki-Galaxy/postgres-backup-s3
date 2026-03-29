@@ -5,7 +5,8 @@ set -o pipefail
 
 apk update
 
-# install postgres runtime deps for client tools copied from postgres image
+# install runtime deps required by pg_dump/pg_restore copied from postgres:<major>-alpine
+# (validated against postgres:18-alpine on 2026-03-29)
 apk add libpq zstd-libs lz4-libs openssl krb5-libs libldap libsasl libcom_err keyutils-libs
 
 # install gpg
