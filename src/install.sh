@@ -5,8 +5,8 @@ set -o pipefail
 
 apk update
 
-# install pg_dump
-apk add postgresql-client
+# install postgres runtime deps for client tools copied from postgres image
+apk add libpq zstd-libs lz4-libs openssl krb5-libs libldap libsasl libcom_err keyutils-libs
 
 # install gpg
 apk add gnupg

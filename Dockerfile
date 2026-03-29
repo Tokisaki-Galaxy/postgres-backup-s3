@@ -1,6 +1,15 @@
 ARG ALPINE_VERSION
+ARG POSTGRES_MAJOR
+FROM postgres:${POSTGRES_MAJOR}-alpine AS postgres_client
+
+ARG ALPINE_VERSION
 FROM alpine:${ALPINE_VERSION}
 ARG TARGETARCH
+ARG POSTGRES_MAJOR
+
+COPY --from=postgres_client /usr/local/bin/pg_dump /usr/local/bin/pg_dump
+COPY --from=postgres_client /usr/local/bin/pg_restore /usr/local/bin/pg_restore
+COPY --from=postgres_client /usr/local/lib/libpq.so* /usr/local/lib/
 
 ADD src/install.sh install.sh
 RUN sh install.sh && rm install.sh
