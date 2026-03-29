@@ -12,7 +12,7 @@ services:
       POSTGRES_PASSWORD: password
 
   backup:
-    image: ghcr.io/your-org-or-user/your-repo:18
+    image: ghcr.io/tokisaki-galaxy/postgres-backup-s3:18
     environment:
       SCHEDULE: '@weekly'     # optional
       BACKUP_KEEP_DAYS: 7     # optional
@@ -29,7 +29,7 @@ services:
 ```
 
 - Images are tagged by the major PostgreSQL version supported: `12`, `13`, `14`, `15`, `16` or `18`.
-- Release tags (e.g. `v1.2.3`) also publish versioned tags to GHCR in the form `ghcr.io/your-org-or-user/your-repo:v1.2.3-pg18`.
+- Release tags (e.g. `v1.2.3`) also publish versioned tags to GHCR in the form `ghcr.io/tokisaki-galaxy/postgres-backup-s3:v1.2.3-pg18`.
 - The `SCHEDULE` variable determines backup frequency. See go-cron schedules documentation [here](http://godoc.org/github.com/robfig/cron#hdr-Predefined_schedules). Omit to run the backup immediately and then exit.
 - If `PASSPHRASE` is provided, the backup will be encrypted using GPG.
 - Run `docker exec <container name> sh backup.sh` to trigger a backup ad-hoc.
