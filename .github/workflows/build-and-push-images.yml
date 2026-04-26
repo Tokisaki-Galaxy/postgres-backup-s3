@@ -12,16 +12,6 @@ jobs:
       contents: read
       packages: write
 
-    strategy:
-      matrix:
-        include:
-          - { postgres: 12, alpine: '3.12' }
-          - { postgres: 13, alpine: '3.14' }
-          - { postgres: 14, alpine: '3.16' }
-          - { postgres: 15, alpine: '3.17' }
-          - { postgres: 16, alpine: '3.19' }
-          - { postgres: 18, alpine: '3.21' }
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -37,9 +27,9 @@ jobs:
         run: |
           repo_lc="$(echo "${GITHUB_REPOSITORY}" | tr '[:upper:]' '[:lower:]')"
           image="ghcr.io/${repo_lc}"
-          tags="${image}:${{ matrix.postgres }}"
+          tags="${image}:18"
           if [[ "${GITHUB_REF}" =~ ^refs/tags/ ]]; then
-            tags="${tags},${image}:${GITHUB_REF_NAME}-pg${{ matrix.postgres }}"
+            tags="${tags},${image}:${GITHUB_REF_NAME}-pg18"
           fi
           echo "tags=${tags}" >> "${GITHUB_OUTPUT}"
 
@@ -57,8 +47,8 @@ jobs:
           push: true
           tags: ${{ steps.prep.outputs.tags }}
           build-args: |
-            ALPINE_VERSION=${{ matrix.alpine }}
-            POSTGRES_MAJOR=${{ matrix.postgres }}
+            ALPINE_VERSION=3.21
+            POSTGRES_MAJOR=18
           platforms: |
             linux/amd64
             linux/arm64

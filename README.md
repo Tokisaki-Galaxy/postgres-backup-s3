@@ -22,16 +22,20 @@ services:
       S3_SECRET_ACCESS_KEY: secret
       S3_BUCKET: my-bucket
       S3_PREFIX: backup
+      BACKUP_MODE: db,dir
+      BACKUP_DIR: /data
       POSTGRES_HOST: postgres
       POSTGRES_DATABASE: dbname
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
 ```
 
-- Images are tagged by the major PostgreSQL version supported: `12`, `13`, `14`, `15`, `16` or `18`.
+- Images are tagged only for the latest supported major PostgreSQL version: `18`.
 - Release tags (e.g. `v1.2.3`) also publish versioned tags to GHCR in the form `ghcr.io/tokisaki-galaxy/postgres-backup-s3:v1.2.3-pg18`.
 - The `SCHEDULE` variable determines backup frequency. See go-cron schedules documentation [here](http://godoc.org/github.com/robfig/cron#hdr-Predefined_schedules). Omit to run the backup immediately and then exit.
 - If `PASSPHRASE` is provided, the backup will be encrypted using GPG.
+- `BACKUP_MODE` can be `db`, `dir`, or `db,dir`. When both are enabled, the directory backup runs first.
+- `BACKUP_DIR` is required when `BACKUP_MODE` includes `dir`. Directory backups are packed as `tar.gz` and uploaded under `S3_PREFIX/dir/`.
 - Run `docker exec <container name> sh backup.sh` to trigger a backup ad-hoc.
 - If `BACKUP_KEEP_DAYS` is set, backups older than this many days will be deleted from S3.
 - Set `S3_ENDPOINT` if you're using a non-AWS S3-compatible storage provider.
@@ -46,6 +50,16 @@ docker exec <container name> sh restore.sh
 ```
 
 > [!NOTE]
+> `RESTORE_MODE` can be `db`, `dir`, or `db,dir`. Set `RESTORE_MODE=dir` to restore directory backups. Use `RESTORE_DIR` as the target path, and `RESTORE_SOURCE_NAME` if the backup source name differs from the target directory name.
+
+```sh
+docker exec -e RESTORE_MODE=dir -e RESTORE_DIR=/data <container name> sh restore.sh
+```
+
+> [!NOTE]
+> Directory restore extracts into a temporary location first. Set `RESTORE_OVERWRITE=yes` if the target directory already has content.
+
+> [!NOTE]
 > If your bucket has more than a 1000 files, the latest may not be restored -- only one S3 `ls` command is used
 
 ### ... from specific backup
@@ -53,9 +67,13 @@ docker exec <container name> sh restore.sh
 docker exec <container name> sh restore.sh <timestamp>
 ```
 
+```sh
+docker exec -e RESTORE_MODE=dir -e RESTORE_DIR=/data <container name> sh restore.sh <timestamp>
+```
+
 # Development
 ## Build the image locally
-`ALPINE_VERSION` determines Postgres version compatibility. See [`build-and-push-images.yml`](.github/workflows/build-and-push-images.yml) for the latest mapping.
+`ALPINE_VERSION` is fixed to `3.21` in CI for the latest `pg18` image.
 ```sh
 DOCKER_BUILDKIT=1 docker build --build-arg ALPINE_VERSION=3.21 .
 ```
